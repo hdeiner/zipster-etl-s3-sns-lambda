@@ -71,7 +71,6 @@ resource "aws_iam_role" "zipster-etl-s3-sns-lambda-load-role" {
 EOF
 }
 
-
 resource "aws_lambda_permission" "zipster-etl-s3-sns-lambda-bucket-transform-input-s3-permission-lambda-transformation" {
   statement_id  = "zipster-etl-s3-sns-lambda-bucket-transform-input-s3-permission-lambda-transformation"
   action        = "lambda:InvokeFunction"

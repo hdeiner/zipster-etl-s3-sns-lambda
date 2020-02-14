@@ -12,10 +12,6 @@ resource "aws_instance" "ec2_mysql" {
     host        = self.public_ip
     timeout     = "10m"
   }
-#  provisioner "file" {
-#    content     = "self.public_dns"
-#    destination = "/home/ubuntu/.mysql_dns"
-#  }
   provisioner "file" {
     source      = "../../../../docker-compose-mysql-and-mysql-data.yml"
     destination = "/home/ubuntu/docker-compose-mysql-and-mysql-data.yml"

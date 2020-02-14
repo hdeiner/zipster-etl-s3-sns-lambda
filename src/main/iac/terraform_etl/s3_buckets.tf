@@ -33,12 +33,3 @@ resource "aws_s3_bucket" "zipster-etl-s3-sns-lambda-bucket-transform-error" {
   acl           = "public-read-write"
   force_destroy = true
 }
-
-#resource "aws_s3_bucket_notification" "zipster-etl-s3-sns-lambda-bucket-transform-error-lambda-notification" {
-#  bucket                = aws_s3_bucket.zipster-etl-s3-sns-lambda-bucket-transform-error.id
-#
-#  lambda_function {
-#    lambda_function_arn = aws_lambda_function.zipster-etl-s3-sns-lambda-transform.arn
-#    events              = ["s3:ObjectCreated:Put"]
-#  }
-#}
