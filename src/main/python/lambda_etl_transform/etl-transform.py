@@ -1,4 +1,4 @@
-import sys, getopt, csv, re, boto3
+import sys, getopt, csv, re, boto3, pytest
 
 def main(argv):
     inputfile = ''
@@ -82,16 +82,6 @@ def lambda_handler(event, context):
 
 def process(inputfile, outputfile, errorfile):
 
-    PATTERN_ZIPCODE        = '^\d{1,5}$'
-    PATTERN_ZIPCODE_TYPE   = '^(STANDARD|PO BOX|UNIQUE){1}$'
-    PATTERN_CITY           = '^([A-Z ]+)$'
-    PATTERN_STATE          = '^(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|PR|AA|AE|AP)$'
-    PATTERN_LOCATION_TYPE  = '^(PRIMARY)$'
-    PATTERN_LATITUDE       = '^([\-]{0,1}[0-9]{1,3}[\.])([0-9]{0,2})$'
-    PATTERN_LONGITUDE      = '^([\-]{0,1}[0-9]{1,3}[\.])([0-9]{0,2})$'
-    PATTERN_LOCATION       = '^([A-Z\- ]+)$'
-    PATTERN_DECOMMISSIONED = '^(FALSE|TRUE)$'
-
     sql_file = open(outputfile, 'w')
     err_file = open(errorfile, 'w')
 
@@ -110,81 +100,156 @@ def process(inputfile, outputfile, errorfile):
                 lines_read += 1
             else:
                 lines_read += 1
+                errors = []
                 #print('Row ' + str(lines_read) +'  = ' + str(row))
                 if (len(row) != 0):
                     lines_processed += 1
-                    reject = False
 
-                    if (not re.match(PATTERN_ZIPCODE, row[0])):
-                        err_file.write('Row ' + str(lines_read) +'  = ' + str(row) + '\n')
-                        err_file.write('\'' + row[0] + '\' is an invalid zipcode\n')
-                        errors_encountered += 1
-                        reject = True
+                    if (not zipcodeIsValid(row[0])):
+                        errors.append("'" + row[0] + "' is an invalid zipcode\n")
                     else:
-                        row[0] = str(int(row[0])).zfill(5)
+                        row[0] = zipcodeTransform(row[0])
 
-                    if (not re.match(PATTERN_ZIPCODE_TYPE, row[1])):
-                        err_file.write('Row ' + str(lines_read) +'  = ' + str(row) + '\n')
-                        err_file.write('\'' + row[1] + '\' is an invalid zipcode_type\n')
-                        errors_encountered += 1
-                        reject = True
+                    if (not zipcodeTypeIsValid(row[1])):
+                        errors.append("'" + row[1] + "' is an invalid zipcode_type\n")
 
-                    if (not re.match(PATTERN_CITY, row[2])):
-                        err_file.write('Row ' + str(lines_read) +'  = ' + str(row) + '\n')
-                        err_file.write('\'' + row[2] + '\' is an invalid city\n')
-                        errors_encountered += 1
-                        reject = True
+                    if (not cityIsValid(row[2])):
+                        errors.append("'" + row[2] + "' is an invalid city\n")
 
-                    if (not re.match(PATTERN_STATE, row[3])):
-                        err_file.write('Row ' + str(lines_read) +'  = ' + str(row) + '\n')
-                        err_file.write('\'' + row[3] + '\' is an invalid state\n')
-                        errors_encountered += 1
-                        reject = True
+                    if (not stateIsValid(row[3])):
+                        errors.append("'" + row[3] + "' is an invalid state\n")
 
-                    if (not re.match(PATTERN_LOCATION_TYPE, row[4])):
-                        err_file.write('Row ' + str(lines_read) +'  = ' + str(row) + '\n')
-                        err_file.write('\'' + row[4] + '\' is an invalid location_type\n')
-                        errors_encountered += 1
-                        reject = True
+                    if (not locationTypeIsValid(row[4])):
+                        errors.append("'" + row[4] + "' is an invalid location_type\n")
 
-                    if (not re.match(PATTERN_LATITUDE, row[5])):
-                        err_file.write('Row ' + str(lines_read) +'  = ' + str(row) + '\n')
-                        err_file.write('\'' + row[5] + '\' is an invalid latitude\n')
-                        errors_encountered += 1
-                        reject = True
+                    if (not latitudeLongitudeIsValid(row[5])):
+                        errors.append("'" + row[5] + "' is an invalid latitude\n")
                     else:
-                        row[5] = re.search(PATTERN_LATITUDE, row[5]).group(1) + re.search(PATTERN_LATITUDE, row[5]).group(2).ljust(2,'0')
+                        row[5] = latitudeLongitudeTransform(row[5])
 
-                    if (not re.match(PATTERN_LONGITUDE, row[6])):
-                        err_file.write('Row ' + str(lines_read) +'  = ' + str(row) + '\n')
-                        err_file.write('\'' + row[6] + '\' is an invalid longitude\n')
-                        errors_encountered += 1
-                        reject = True
+                    if (not latitudeLongitudeIsValid(row[6])):
+                        errors.append("'" + row[6] + "' is an invalid longitude\n")
                     else:
-                        row[6] = re.search(PATTERN_LATITUDE, row[6]).group(1) + re.search(PATTERN_LATITUDE, row[6]).group(2).ljust(2,'0')
+                        row[6] = latitudeLongitudeTransform(row[6])
 
-                    if (not re.match(PATTERN_LOCATION, row[7])):
-                        err_file.write('Row ' + str(lines_read) +'  = ' + str(row) + '\n')
-                        err_file.write('\'' + row[7] + '\' is an invalid location\n')
-                        errors_encountered += 1
-                        reject = True
+                    if (not locationIsValid(row[7])):
+                        errors.append("'" + row[7] + "' is an invalid location\n")
 
-                    if (not re.match(PATTERN_DECOMMISSIONED, row[8])):
-                        err_file.write('Row ' + str(lines_read) +'  = ' + str(row) + '\n')
-                        err_file.write('\'' + row[8] + '\' is an invalid decommissioned\n')
-                        errors_encountered += 1
-                        reject = True
+                    if (not decommissionedIsValid(row[8])):
+                        errors.append("'" + row[8] + "' is an invalid decommissioned\n")
 
-                    if (not reject):
-                        sql_file.write("INSERT INTO ZIPCODES (ZIPCODE, ZIPCODE_TYPE, CITY, STATE, LOCATION_TYPE, LATITUDE, LONGITUDE, LOCATION, DECOMISSIONED) VALUES(\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",{});\n".format(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8]))
+                    if (len(errors) == 0):
+                        fileWrite(sql_file, "INSERT INTO ZIPCODES (ZIPCODE, ZIPCODE_TYPE, CITY, STATE, LOCATION_TYPE, LATITUDE, LONGITUDE, LOCATION, DECOMISSIONED) VALUES(\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",\"{}\",{});\n".format(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8]))
                         lines_accepted += 1
                     else:
+                        fileWrite(err_file, "Row " + str(lines_read) +"  = " + str(row) + "\n")
+                        fileWrite(err_file, errors)
+                        errors_encountered += len(errors)
                         lines_rejected += 1
                 else:
-                    err_file.write('Row ' + str(lines_read) +'  = ' + str(row) + '\n')
-                    err_file.write('Blank row skipped\n')
+                    fileWrite(err_file, 'Row ' + str(lines_read) +'  = ' + str(row) + '\n')
+                    fileWrite(err_file,'Blank row skipped\n')
                     errors_encountered += 1
+
         print('Lines read=' + str(lines_read) + ' processed=' + str(lines_processed) + ' accepted=' + str(lines_accepted) + ' rejected=' + str(lines_rejected) + ' errors=' + str(errors_encountered))
+
+def fileWrite(file,lines):
+    file.writelines(lines)
+
+def zipcodeIsValid(input):
+    return re.match('^\d{1,5}$', input)
+
+def zipcodeTransform(input):
+    return str(int(input)).zfill(5)
+
+def zipcodeTypeIsValid(input):
+    return re.match('^(STANDARD|PO BOX|UNIQUE){1}$', input)
+
+def cityIsValid(input):
+    return re.match('^([A-Z ]+)$', input)
+
+def stateIsValid(input):
+    return re.match('^(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|PR|AA|AE|AP)$', input)
+
+def locationTypeIsValid(input):
+    return re.match('^(PRIMARY)$', input)
+
+def latitudeLongitudeIsValid(input):
+    return re.match('^([\-]{0,1}[0-9]{1,3}[\.])([0-9]{0,2})$', input)
+
+def latitudeLongitudeTransform(input):
+    return re.search('^([\-]{0,1}[0-9]{1,3}[\.])([0-9]{0,2})$', input).group(1) + re.search('^([\-]{0,1}[0-9]{1,3}[\.])([0-9]{0,2})$', input).group(2).ljust(2,'0')
+
+def locationIsValid(input):
+    return re.match('^([A-Z\- ]+)$', input)
+
+def decommissionedIsValid(input):
+    return re.match('^(FALSE|TRUE)$', input)
+
+# Unit Tests
+
+def test_zipcodeIsValid():
+    assert not zipcodeIsValid("0744Z")
+    assert not zipcodeIsValid("074401548")
+    assert zipcodeIsValid("07440")
+
+def test_zipcodeTransform():
+    assert zipcodeTransform("7440") == "07440"
+    assert zipcodeTransform("0") == "00000"
+
+def test_zipcodeTypeIsValid():
+    assert not zipcodeTypeIsValid("hello")
+    assert not zipcodeTypeIsValid("")
+    assert not zipcodeTypeIsValid("standard")
+    assert zipcodeTypeIsValid("STANDARD")
+    assert zipcodeTypeIsValid("PO BOX")
+    assert zipcodeTypeIsValid("UNIQUE")
+
+def test_cityIsValid():
+    assert not cityIsValid("HOME TOWN 1")
+    assert not cityIsValid("Home Town")
+    assert cityIsValid("HOME TOWN")
+
+def test_stateIsValid():
+    assert not stateIsValid("nj")
+    assert stateIsValid("NJ")
+
+def test_locationTypeIsValid():
+    assert not locationTypeIsValid("primary")
+    assert not locationTypeIsValid("SECONDARY")
+    assert locationTypeIsValid("PRIMARY")
+
+def test_longitudeIsValid():
+    assert not latitudeLongitudeIsValid("LONGITUDE")
+    assert not latitudeLongitudeIsValid("+100.01")
+    assert latitudeLongitudeIsValid("100.01")
+    assert not latitudeLongitudeIsValid("1000.01")
+    assert not latitudeLongitudeIsValid(".01")
+    assert latitudeLongitudeIsValid("0.01")
+    assert not latitudeLongitudeIsValid("100")
+    assert latitudeLongitudeIsValid("100.")
+    assert latitudeLongitudeIsValid("100.0")
+    assert latitudeLongitudeIsValid("100.00")
+    assert not latitudeLongitudeIsValid("100.000")
+
+def test_latitudeLongitudeTransform():
+    assert latitudeLongitudeTransform("100.") == "100.00"
+    assert latitudeLongitudeTransform("100.0") == "100.00"
+    assert latitudeLongitudeTransform("100.00") == "100.00"
+
+def test_locationIsValid():
+    assert not locationIsValid("New York")
+    assert locationIsValid("NEW YORK")
+    assert locationIsValid("NEW-YORK")
+    assert not locationIsValid("NEW_YORK")
+
+def test_decommissionedIsValid():
+    assert not decommissionedIsValid("true")
+    assert not decommissionedIsValid("false")
+    assert not decommissionedIsValid("")
+    assert decommissionedIsValid("TRUE")
+    assert decommissionedIsValid("FALSE")
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])

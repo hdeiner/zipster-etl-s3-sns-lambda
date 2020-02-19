@@ -2,39 +2,23 @@ Row 24  = []
 Blank row skipped
 Row 25  = ['', '', '', '', '', '', '', '', '']
 '' is an invalid zipcode
-Row 25  = ['', '', '', '', '', '', '', '', '']
 '' is an invalid zipcode_type
-Row 25  = ['', '', '', '', '', '', '', '', '']
 '' is an invalid city
-Row 25  = ['', '', '', '', '', '', '', '', '']
 '' is an invalid state
-Row 25  = ['', '', '', '', '', '', '', '', '']
 '' is an invalid location_type
-Row 25  = ['', '', '', '', '', '', '', '', '']
 '' is an invalid latitude
-Row 25  = ['', '', '', '', '', '', '', '', '']
 '' is an invalid longitude
-Row 25  = ['', '', '', '', '', '', '', '', '']
 '' is an invalid location
-Row 25  = ['', '', '', '', '', '', '', '', '']
 '' is an invalid decommissioned
 Row 26  = ['1234A', 'NONSTANDARD', 'WESTON1', 'C1', 'NONPRIMARY', '.22', '.37', 'NA-US-CT+WESTON', 'TRU']
 '1234A' is an invalid zipcode
-Row 26  = ['1234A', 'NONSTANDARD', 'WESTON1', 'C1', 'NONPRIMARY', '.22', '.37', 'NA-US-CT+WESTON', 'TRU']
 'NONSTANDARD' is an invalid zipcode_type
-Row 26  = ['1234A', 'NONSTANDARD', 'WESTON1', 'C1', 'NONPRIMARY', '.22', '.37', 'NA-US-CT+WESTON', 'TRU']
 'WESTON1' is an invalid city
-Row 26  = ['1234A', 'NONSTANDARD', 'WESTON1', 'C1', 'NONPRIMARY', '.22', '.37', 'NA-US-CT+WESTON', 'TRU']
 'C1' is an invalid state
-Row 26  = ['1234A', 'NONSTANDARD', 'WESTON1', 'C1', 'NONPRIMARY', '.22', '.37', 'NA-US-CT+WESTON', 'TRU']
 'NONPRIMARY' is an invalid location_type
-Row 26  = ['1234A', 'NONSTANDARD', 'WESTON1', 'C1', 'NONPRIMARY', '.22', '.37', 'NA-US-CT+WESTON', 'TRU']
 '.22' is an invalid latitude
-Row 26  = ['1234A', 'NONSTANDARD', 'WESTON1', 'C1', 'NONPRIMARY', '.22', '.37', 'NA-US-CT+WESTON', 'TRU']
 '.37' is an invalid longitude
-Row 26  = ['1234A', 'NONSTANDARD', 'WESTON1', 'C1', 'NONPRIMARY', '.22', '.37', 'NA-US-CT+WESTON', 'TRU']
 'NA-US-CT+WESTON' is an invalid location
-Row 26  = ['1234A', 'NONSTANDARD', 'WESTON1', 'C1', 'NONPRIMARY', '.22', '.37', 'NA-US-CT+WESTON', 'TRU']
 'TRU' is an invalid decommissioned
 Row 27  = ['06883', 'STANDARD', 'WESTON', 'CT', 'PRIMARY', '41.A2', '-73.37', 'NA-US-CT-WESTON', 'FALSE']
 '41.A2' is an invalid latitude
