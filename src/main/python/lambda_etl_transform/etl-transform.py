@@ -1,4 +1,4 @@
-import sys, getopt, csv, re, boto3, pytest
+import sys, getopt, csv, re, boto3
 
 def main(argv):
     inputfile = ''
