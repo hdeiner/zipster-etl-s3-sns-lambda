@@ -1,6 +1,6 @@
 import sys, os
 from behave import *
-from hamcrest import*
+from hamcrest import *
 
 @given(u'an input file called "{inputfilename}" with the following contents')
 def step_inputfile_name(context, inputfilename):

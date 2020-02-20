@@ -1,6 +1,6 @@
 Feature: Transform ETL extract data file and produce error and loadable files
 
-  Scenario: The usual suspects
+  Scenario: Testing just the etl-transform locally
     Given an input file called "test.csv" with the following contents:
       """
       Zipcode,ZipCodeType,City,State,LocationType,Lat,Long,Location,Decommisioned

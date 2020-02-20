@@ -27,3 +27,5 @@ dependency-reduced-pom.xml
 lambda_etl_load.zip
 lambda_etl_transform.zip
 mysql-data/
+
+.pytest_cache/
