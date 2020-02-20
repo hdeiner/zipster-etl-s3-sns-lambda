@@ -1,4 +1,5 @@
 import sys, getopt, csv, re, boto3
+from botocore.exceptions import ClientError
 
 def main(argv):
     inputfile = ''
@@ -68,15 +69,31 @@ def lambda_handler(event, context):
     print("etl-transform processing")
     process("/tmp/etl-transform.input", "/tmp/etl-transform.output", "/tmp/etl-transform.error")
 
-    print("etl-transform sending zipster_etl_s3_sns_lambda_transform_topic update eMail 4 of 5 (uploading transform errors)")
-    sns_client.publish(TopicArn=zipster_etl_s3_sns_lambda_transform_topic_arn, Subject='zipster-etl-s3-sns-lambda-transform-topic', Message='Step 4 of 5 - Uploading transform errors to s3 bucket=zipster-etl-s3-sns-lambda-bucket-transform-error result_object='+transform_input_object)
-    print("etl-transform uploading bucket=zipster-etl-s3-sns-lambda-bucket-transform-error object="+transform_input_object)
-    s3_client.upload_file("/tmp/etl-transform.error", "zipster-etl-s3-sns-lambda-bucket-transform-error", transform_input_object)
+    object_sent = False
+    retries = 1
+    while ((not object_sent) and (retries < 10)):
+        print("etl-transform sending zipster_etl_s3_sns_lambda_transform_topic update eMail 4 of 5 (uploading transform errors)")
+        sns_client.publish(TopicArn=zipster_etl_s3_sns_lambda_transform_topic_arn, Subject='zipster-etl-s3-sns-lambda-transform-topic', Message='Step 4 of 5 - Uploading transform errors to s3 bucket=zipster-etl-s3-sns-lambda-bucket-transform-error result_object='+transform_input_object)
+        print("etl-transform uploading bucket=zipster-etl-s3-sns-lambda-bucket-transform-error object="+transform_input_object)
+        try:
+            s3_client.upload_file("/tmp/etl-transform.error", "zipster-etl-s3-sns-lambda-bucket-transform-error", transform_input_object)
+            object_sent = True
+        except ClientError as e:
+            print("etl-transform uploading bucket=zipster-etl-s3-sns-lambda-bucket-transform-error object="+transform_input_object + 'got an exception when uploading')
+            retries += 1
 
-    print("etl-transform sending zipster_etl_s3_sns_lambda_transform_topic update eMail 5 of 5 (uploading load input)")
-    sns_client.publish(TopicArn=zipster_etl_s3_sns_lambda_transform_topic_arn, Subject='zipster-etl-s3-sns-lambda-transform-topic', Message='Step 5 of 5 - Uploading transform results to s3 bucket=zipster-etl-s3-sns-lambda-bucket-load-input result_object='+transform_input_object)
-    print("etl-transform uploading bucket=zipster-etl-s3-sns-lambda-bucket-load-input object="+transform_input_object)
-    s3_client.upload_file("/tmp/etl-transform.output", "zipster-etl-s3-sns-lambda-bucket-load-input", transform_input_bucket)
+    object_sent = False
+    retries = 1
+    while ((not object_sent) and (retries < 10)):
+        print("etl-transform sending zipster_etl_s3_sns_lambda_transform_topic update eMail 5 of 5 (uploading load input)")
+        sns_client.publish(TopicArn=zipster_etl_s3_sns_lambda_transform_topic_arn, Subject='zipster-etl-s3-sns-lambda-transform-topic', Message='Step 5 of 5 - Uploading transform results to s3 bucket=zipster-etl-s3-sns-lambda-bucket-load-input result_object='+transform_input_object)
+        print("etl-transform uploading bucket=zipster-etl-s3-sns-lambda-bucket-load-input object="+transform_input_object)
+        try:
+            s3_client.upload_file("/tmp/etl-transform.output", "zipster-etl-s3-sns-lambda-bucket-load-input", transform_input_bucket)
+            object_sent = True
+        except ClientError as e:
+            print("etl-transform uploading bucket=zipster-etl-s3-sns-lambda-bucket-load-input object="+transform_input_object + 'got an exception when uploading')
+            retries += 1
 
     print("etl-transform finished lambda_handler")
 

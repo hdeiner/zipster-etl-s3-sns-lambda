@@ -35,8 +35,6 @@ Feature: Transform ETL integration test
       """
     When I send it off to process at "s3://zipster-etl-s3-sns-lambda-bucket-transform-input"
     And I wait for "15" seconds instead of doing this right with events
-    When I send it off to process at "s3://zipster-etl-s3-sns-lambda-bucket-transform-input"
-    And I wait for "15" seconds instead of doing this right with events
     Then the error object at "s3://zipster-etl-s3-sns-lambda-bucket-transform-error" should contain
       """
       Row 24  = []

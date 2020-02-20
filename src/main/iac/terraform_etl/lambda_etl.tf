@@ -18,6 +18,7 @@ resource "aws_lambda_function" "zipster-etl-s3-sns-lambda-transform" {
   source_code_hash = data.archive_file.zipit_lambda_etl_transform.output_base64sha256
   function_name    = "zipster-etl-s3-sns-lambda-transform"
   description      = "zipster-etl-s3-sns-lambda-transform"
+  timeout          = "10"
 }
 
 resource "aws_lambda_function" "zipster-etl-s3-sns-lambda-load" {
@@ -28,6 +29,7 @@ resource "aws_lambda_function" "zipster-etl-s3-sns-lambda-load" {
   source_code_hash = data.archive_file.zipit_lambda_etl_load.output_base64sha256
   function_name    = "zipster-etl-s3-sns-lambda-load"
   description      = "zipster-etl-s3-sns-lambda-load"
+  timeout          = "10"
   environment {
     variables = {
       DB_HOST = aws_instance.ec2_mysql[0].public_dns
