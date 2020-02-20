@@ -26,10 +26,10 @@ def step_transform_input_file(context):
 
 @then(u'the error file should contain')
 def step_check_error_file(context):
-    handle_for_reading_errror_file_file = open(context.error_filename, 'r')
-    error_file_lines = handle_for_reading_errror_file_file.readlines()
+    handle_for_reading_errror_file = open(context.error_filename, 'r')
+    error_file_lines = handle_for_reading_errror_file.readlines()
     lines_in_error_file = len(error_file_lines)
-    handle_for_reading_errror_file_file.close()
+    handle_for_reading_errror_file.close()
     lines_expected = context.text.split('\n')
     for i in range(0, lines_in_error_file-1):
         assert_that(error_file_lines[i].strip(), equal_to(lines_expected[i].strip()), 'in line '+str(i+1))

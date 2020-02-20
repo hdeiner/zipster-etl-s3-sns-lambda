@@ -6,4 +6,6 @@ cd src/main/iac/terraform_etl
 
 terraform destroy -auto-approve
 
+rm -rf .mysql_dns
+
 cd -

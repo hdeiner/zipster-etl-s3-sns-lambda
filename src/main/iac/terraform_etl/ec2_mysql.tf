@@ -68,3 +68,7 @@ resource "aws_security_group" "mysql" {
     Name = "Mysql Security Group"
   }
 }
+
+output "mysql_dns" {
+  value = [aws_instance.ec2_mysql.*.public_dns]
+}
