@@ -122,6 +122,7 @@ It's finally time to allow Terraform the chance to do its thing!
 Once Terraform creates the SMTP SNS subscriptions, because they are eMails, AWS reqires that the recipient verifies that they
 want to subscribe.  This does not occurr with SMS notifications, and can be avoided if the domain is made veriiable in the AWS system.
 But this is what those eMails look like.
+
 ![sns_subscription_veification_1](assets/sns_subscription_veification_1.png) 
 
 ![sns_subscription_veification_2](assets/sns_subscription_veification_2.png) 
