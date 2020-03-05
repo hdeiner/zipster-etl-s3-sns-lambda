@@ -5,7 +5,7 @@ Right now, we use expensive tools such as Informatica to do ETL processing and i
 
 Here's a system level diagram is what this project looks like:
 
-![architectural_diagram](assets/2020.02.11 zipster-s3-sns-lambda-etl.png)
+![architectural_diagram](assets/2020.02.11\ zipster-s3-sns-lambda-etl.png)
 
 ##### Demo
 ###### Chapter 1 - Starting backwards: looking at the end-to-end integration test FIRST

@@ -43,6 +43,6 @@ docker push howarddeiner/zipster-mysql
 figlet -w 160 -f small "Serialize the mysql-data"
 sudo -S <<< "password"  tar -czf mysql-data.tar.gz mysql-data
 
-figlet -w 160 -f small "Bring Down MySQL Continer"
+figlet -w 160 -f small "Bring Down MySQL Container"
 docker-compose -f docker-compose-mysql-and-mysql-data.yml down
 sudo -S <<< "password" rm -rf .mysql-data
